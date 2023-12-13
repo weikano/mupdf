@@ -54,6 +54,25 @@
 /* #define FZ_ENABLE_HTML 1 */
 /* #define FZ_ENABLE_EPUB 1 */
 
+#ifndef FZ_ENABLE_XPS
+#define FZ_ENABLE_XPS 0
+#endif
+#ifndef FZ_ENABLE_SVG
+#define FZ_ENABLE_SVG 0
+#endif
+#ifndef FZ_ENABLE_CBZ
+#define FZ_ENABLE_CBZ 0
+#endif
+#ifndef FZ_ENABLE_IMG
+#define FZ_ENABLE_IMG 0
+#endif
+#ifndef FZ_ENABLE_HTML
+#define FZ_ENABLE_HTML 0
+#endif
+#ifndef FZ_ENABLE_EPUB
+#define FZ_ENABLE_EPUB 0
+#endif
+
 /**
 	Choose which document writers to include.
 	By default all are enabled. To avoid building unwanted
@@ -62,6 +81,16 @@
 /* #define FZ_ENABLE_OCR_OUTPUT 1 */
 /* #define FZ_ENABLE_DOCX_OUTPUT 1 */
 /* #define FZ_ENABLE_ODT_OUTPUT 1 */
+
+#ifndef FZ_ENABLE_OCR_OUTPUT
+#define FZ_ENABLE_OCR_OUTPUT 0
+#endif
+#ifndef FZ_ENABLE_DOCX_OUTPUT
+#define FZ_ENABLE_DOCX_OUTPUT 0
+#endif
+#ifndef FZ_ENABLE_ODT_OUTPUT
+#define FZ_ENABLE_ODT_OUTPUT 0
+#endif
 
 /**
 	Choose whether to enable ICC color profiles.
