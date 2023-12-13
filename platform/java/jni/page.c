@@ -464,3 +464,34 @@ FUN(Page_getLabel)(JNIEnv *env, jobject self)
 
 	return (*env)->NewStringUTF(env, buf);
 }
+
+JNIEXPORT jstring JNICALL
+FUN(Page_getTextContent)(JNIEnv *env, jobject self)
+{
+	fz_context *ctx = get_context(env);
+	fz_page *page = from_Page(env, self);	
+
+	if (!ctx || !page)
+		return NULL;
+
+	fz_stext_page *text;
+	fz_buffer *buffer;
+	const char* haystack;
+	fz_stext_options opts = { FZ_STEXT_DEHYPHENATE };
+	fz_try(ctx)	
+	{
+		text = fz_new_stext_page_from_page(ctx, page, &opts);
+		buffer = fz_new_buffer_from_stext_page(ctx, text);
+		haystack = fz_string_from_buffer(ctx, buffer);
+	}				
+	fz_always(ctx)
+	{
+		fz_drop_buffer(ctx,buffer);
+		fz_drop_stext_page(ctx,text);		
+	}
+
+	fz_catch(ctx)
+		jni_rethrow(env, ctx);
+
+	return (*env)->NewStringUTF(env, haystack);
+}

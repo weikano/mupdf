@@ -96,4 +96,6 @@ public class Page
 	public native void deleteLink(Link link);
 
 	public native String getLabel();
+
+	public native String getTextContent();
 }

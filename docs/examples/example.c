@@ -93,7 +93,12 @@ int main(int argc, char **argv)
 		fz_drop_context(ctx);
 		return EXIT_FAILURE;
 	}
-
+	fz_outline* outline = fz_load_outline(ctx, doc);
+	while(outline)
+	{
+		printf("outline title:%s, page:%d\n", outline->title, outline->page.page);
+		outline = outline->next;
+	}
 	/* Compute a transformation matrix for the zoom and rotation desired. */
 	/* The default resolution without scaling is 72 dpi. */
 	ctm = fz_scale(zoom / 100, zoom / 100);

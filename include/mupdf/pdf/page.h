@@ -24,6 +24,7 @@
 #define MUPDF_PDF_PAGE_H
 
 #include "mupdf/pdf/interpret.h"
+#include "mupdf/fitz/structured-text.h"
 
 int pdf_lookup_page_number(fz_context *ctx, pdf_document *doc, pdf_obj *pageobj);
 int pdf_count_pages(fz_context *ctx, pdf_document *doc);
