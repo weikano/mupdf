@@ -98,4 +98,14 @@ public class Page
 	public native String getLabel();
 
 	public native String getTextContent();
+
+	/**
+	 * 自动裁边功能，功能参考自koreader
+	 *
+	 * document.lua
+	 * function page_mt.__index:getUsedBBox()
+	 *
+	 * @return null if exception else contents rect
+	 */
+	public native Rect getUsedBBox();
 }

@@ -469,7 +469,7 @@ JNIEXPORT jstring JNICALL
 FUN(Page_getTextContent)(JNIEnv *env, jobject self)
 {
 	fz_context *ctx = get_context(env);
-	fz_page *page = from_Page(env, self);	
+	fz_page *page = from_Page(env, self);
 
 	if (!ctx || !page)
 		return NULL;
@@ -478,20 +478,55 @@ FUN(Page_getTextContent)(JNIEnv *env, jobject self)
 	fz_buffer *buffer;
 	const char* haystack;
 	fz_stext_options opts = { FZ_STEXT_DEHYPHENATE };
-	fz_try(ctx)	
+	fz_try(ctx)
 	{
 		text = fz_new_stext_page_from_page(ctx, page, &opts);
 		buffer = fz_new_buffer_from_stext_page(ctx, text);
 		haystack = fz_string_from_buffer(ctx, buffer);
-	}				
+	}
 	fz_always(ctx)
 	{
 		fz_drop_buffer(ctx,buffer);
-		fz_drop_stext_page(ctx,text);		
+		fz_drop_stext_page(ctx,text);
 	}
 
 	fz_catch(ctx)
 		jni_rethrow(env, ctx);
 
 	return (*env)->NewStringUTF(env, haystack);
+}
+
+/**
+ * 自动裁边功能，功能参考自koreader
+ *
+ * document.lua
+ * function page_mt.__index:getUsedBBox()
+ *
+ * @param env
+ * @param self
+ * @return
+ */
+JNIEXPORT jobject JNICALL
+FUN(Page_getUsedBBox)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    fz_page *page = from_Page(env, self);
+    fz_rect rect = fz_make_rect(0,0,0,0);
+    if (!ctx || !page)
+        return NULL;
+    fz_device *device = fz_new_bbox_device(ctx, &rect);
+    fz_try(ctx)
+    {
+        fz_run_page(ctx, page, device, fz_identity, NULL);
+        fz_close_device(ctx, device);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, device);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
+    return to_Rect_safe(ctx, env, rect);
 }

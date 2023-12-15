@@ -5416,6 +5416,14 @@ JNIEXPORT jstring JNICALL Java_com_artifex_mupdf_fitz_Page_getLabel
 JNIEXPORT jstring JNICALL Java_com_artifex_mupdf_fitz_Page_getLabel
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_artifex_mupdf_fitz_Page
+ * Method:    getUsedBBox
+ * Signature: ()Lcom/artifex/mupdf/fitz/Rect;
+ */
+JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_getUsedBBox
+        (JNIEnv *, jobject page);
+
 
 #ifdef __cplusplus
 }
