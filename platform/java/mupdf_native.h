@@ -5362,6 +5362,14 @@ JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_toStructuredText
 
 /*
  * Class:     com_artifex_mupdf_fitz_Page
+ * Method:    toStructuredText
+ * Signature: (Ljava/lang/String;)Lcom/artifex/mupdf/fitz/StructuredText;
+ */
+JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_toStructuredTextAdvance
+        (JNIEnv *, jobject, jint, jfloat);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_Page
  * Method:    search
  * Signature: (Ljava/lang/String;)[[Lcom/artifex/mupdf/fitz/Quad;
  */

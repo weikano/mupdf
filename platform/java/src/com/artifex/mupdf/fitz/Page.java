@@ -108,4 +108,15 @@ public class Page
 	 * @return null if exception else contents rect
 	 */
 	public native Rect getUsedBBox();
+
+	public StructuredText toStructuredTextAdvance(int flags) {
+		return toStructuredTextAdvance(flags, 1);
+	}
+
+	/**
+	 * @param flags 0或者{@link StructuredText#FLAG_FZ_STEXT_DEHYPHENATE}等标记组合
+	 * @param scale 缩放比例，默认为1
+	 * @return
+	 */
+	public native StructuredText toStructuredTextAdvance(int flags, float scale);
 }

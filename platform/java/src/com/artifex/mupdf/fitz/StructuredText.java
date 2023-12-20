@@ -59,7 +59,7 @@ public class StructuredText
 		return walker.getBlocks();
 	}
 
-	class BlockWalker implements StructuredTextWalker {
+	static class BlockWalker implements StructuredTextWalker {
 		ArrayList<TextBlock> blocks;
 		ArrayList<TextLine> lines;
 		ArrayList<TextChar> chrs;
@@ -133,4 +133,48 @@ public class StructuredText
 		}
 	}
 
+	/**
+	 * FZ_STEXT_PRESERVE_LIGATURES: If this option is activated
+	 * 	ligatures are passed through to the application in their
+	 * 	original form. If this option is deactivated ligatures are
+	 * 	expanded into their constituent parts, e.g. the ligature ffi is
+	 * 	expanded into three separate characters f, f and i.
+	 */
+	public static final int FLAG_FZ_STEXT_PRESERVE_LIGATURES = 1;
+	/**
+	 * FZ_STEXT_PRESERVE_WHITESPACE: If this option is activated
+	 * 	whitespace is passed through to the application in its original
+	 * 	form. If this option is deactivated any type of horizontal
+	 * 	whitespace (including horizontal tabs) will be replaced with
+	 * 	space characters of variable width.
+	 */
+	public static final int FLAG_FZ_STEXT_PRESERVE_WHITESPACE = 2;
+	/**
+	 * FZ_STEXT_PRESERVE_IMAGES: If this option is set, then images
+	 * 	will be stored in the structured text structure. The default is
+	 * 	to ignore all images.
+	 */
+	public static final int FLAG_FZ_STEXT_PRESERVE_IMAGES = 4;
+	/**
+	 * FZ_STEXT_INHIBIT_SPACES: If this option is set, we will not try
+	 * 	to add missing space characters where there are large gaps
+	 * 	between characters.
+	 */
+	public static final int FLAG_FZ_STEXT_INHIBIT_SPACES = 8;
+	/**
+	 * FZ_STEXT_DEHYPHENATE: If this option is set, hyphens at the
+	 * 	end of a line will be removed and the lines will be merged.
+	 */
+	public static final int FLAG_FZ_STEXT_DEHYPHENATE = 16;
+	/**
+	 * FZ_STEXT_PRESERVE_SPANS: If this option is set, spans on the same line
+	 * 	will not be merged. Each line will thus be a span of text with the same
+	 * 	font, colour, and size.
+	 */
+	public static final int FLAG_FZ_STEXT_PRESERVE_SPANS = 32;
+	/**
+	 * FZ_STEXT_MEDIABOX_CLIP: If this option is set, characters entirely
+	 * 	outside each page's mediabox will be ignored.
+	 */
+	public static final int FLAG_FZ_STEXT_MEDIABOX_CLIP = 64;
 }

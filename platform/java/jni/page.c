@@ -323,6 +323,30 @@ FUN(Page_toStructuredText)(JNIEnv *env, jobject self, jstring joptions)
 	return to_StructuredText_safe_own(ctx, env, text);
 }
 
+JNIEXPORT jobject JNICALL
+FUN(Page_toStructuredTextAdvance)(JNIEnv *env, jobject self, jint flags, jfloat scale)
+{
+    fz_context *ctx = get_context(env);
+    fz_page *page = from_Page(env, self);
+    fz_stext_page *text = NULL;
+    const char *options= NULL;
+    fz_stext_options opts = {flags, scale};
+
+
+    fz_try(ctx)
+            {
+                fz_parse_stext_options(ctx, &opts, options);
+                text = fz_new_stext_page_from_page(ctx, page, &opts);
+            }
+    fz_always(ctx)
+        {
+        }
+    fz_catch(ctx)
+        jni_rethrow(env, ctx);
+
+    return to_StructuredText_safe_own(ctx, env, text);
+}
+
 JNIEXPORT jbyteArray JNICALL
 FUN(Page_textAsHtml)(JNIEnv *env, jobject self)
 {
