@@ -54,6 +54,7 @@ int main(int argc, char** argv)
             fz_device* device = fz_new_bbox_device(ctx, &rect);
             fz_run_page(ctx, page, device, fz_identity, NULL);
             fz_drop_page(ctx, page);
+            fz_close_device(ctx, device);
             fz_drop_device(ctx, device);
             printf("bbox at page %d:(%f,%f,%f,%f)\n", i, rect.x0, rect.y0, rect.x1, rect.y1);
         }
