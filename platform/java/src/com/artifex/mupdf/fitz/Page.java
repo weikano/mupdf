@@ -101,7 +101,7 @@ public class Page
 
 	/**
 	 * 自动裁边功能，功能参考自koreader
-	 *
+	 * <p>
 	 * document.lua
 	 * function page_mt.__index:getUsedBBox()
 	 *
@@ -119,4 +119,36 @@ public class Page
 	 * @return
 	 */
 	public native StructuredText toStructuredTextAdvance(int flags, float scale);
+
+	/**
+	 * if (!page || !page_x || !page_y)
+	 * return false;
+	 * <p>
+	 * IPDF_Page* pPage = IPDFPageFromFPDFPage(page);
+	 * const FX_RECT rect(start_x, start_y, start_x + size_x, start_y + size_y);
+	 * absl::optional<CFX_PointF> pos =
+	 * pPage->DeviceToPage(rect, rotate, CFX_PointF(device_x, device_y));
+	 * if (!pos.has_value())
+	 * return false;
+	 * <p>
+	 * *page_x = pos->x;
+	 * *page_y = pos->y;
+	 * return true;
+	 * @param bbox 页面尺寸
+	 * @param startX 偏移量x
+	 * @param startY 偏移量Y
+	 * @param size_x 映射后的宽度
+	 * @param size_y 映射后的高度
+	 * @param rotate 旋转
+	 * @param device_x 在size_x上的横坐标
+	 * @param device_y 在size_y上的纵坐标
+	 * @return 映射到pdf文档坐标后的x,y null if context exception
+	 */
+	public native Point deviceToPage(Rect bbox, int startX, int startY, int size_x, int size_y, int rotate, double device_x, double device_y);
+
+	/**
+	 * 获取页面尺寸，参考pdfium cpdf_page.cpp CPDF_Page::UpdateDimensions实现
+	 * @return
+	 */
+	public native Rect getPdfiumBBox();
 }

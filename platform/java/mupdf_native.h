@@ -5370,6 +5370,22 @@ JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_toStructuredTextAdvan
 
 /*
  * Class:     com_artifex_mupdf_fitz_Page
+ * Method:    deviceToPage
+ * Signature: (DDIIIIDD)Lcom/artifex/mupdf/fitz/Point;
+ */
+JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_deviceToPage
+        (JNIEnv *, jobject page, jobject rect, jint startX, jint startY, jint sizeX, jint sizeY, jint rotate, jdouble device_x, jdouble device_y);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_Page
+ * Method:    getPdfiumBBox
+ * Signature: (V)Lcom/artifex/mupdf/fitz/Rect;
+ */
+JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_getPdfiumBBox
+        (JNIEnv* env, jobject page);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_Page
  * Method:    search
  * Signature: (Ljava/lang/String;)[[Lcom/artifex/mupdf/fitz/Quad;
  */

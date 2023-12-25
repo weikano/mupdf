@@ -22,6 +22,8 @@
 
 /* Page interface */
 
+#include <math.h>
+
 JNIEXPORT void JNICALL
 FUN(Page_finalize)(JNIEnv *env, jobject self)
 {
@@ -345,6 +347,142 @@ FUN(Page_toStructuredTextAdvance)(JNIEnv *env, jobject self, jint flags, jfloat 
         jni_rethrow(env, ctx);
 
     return to_StructuredText_safe_own(ctx, env, text);
+}
+
+static fz_matrix FZ_Matrix_inverse(fz_matrix matrix)
+{
+    fz_matrix inverse = fz_identity;
+    float i = matrix.a * matrix.d - matrix.b*matrix.c;
+    if(fabs(i) == 0) {
+        return inverse;
+    }
+    float j = -i;
+    inverse.a = matrix.d / i;
+    inverse.b = matrix.b / j;
+    inverse.c = matrix.c / j;
+    inverse.d = matrix.a / i;
+    inverse.e = (matrix.c * matrix.f - matrix.d * matrix.e) / i;
+    inverse.f = (matrix.a * matrix.f - matrix.b * matrix.e) / j;
+    return inverse;
+}
+
+static fz_matrix FZ_Matrix_multiply(fz_matrix src, fz_matrix right)
+{
+    return fz_make_matrix(src.a * right.a + src.b * right.c, src.a * right.b + src.b * right.d,
+                          src.c * right.a + src.d * right.c, src.c * right.b + src.d * right.d,
+                          src.e * right.a + src.f * right.c + right.e,
+                          src.e * right.b + src.f * right.d + right.f);
+}
+
+JNIEXPORT jobject JNICALL
+FUN(Page_deviceToPage)(JNIEnv *env, jobject self, jobject jpagerect, jint startX, jint startY, jint sizeX, jint sizeY, jint rotate, jdouble device_x, jdouble device_y)
+{
+    fz_context *context = get_context(env);
+    fz_rect page_bbox = from_Rect(env, jpagerect);
+    float page_width = page_bbox.x1 - page_bbox.x0;
+    float page_height = page_bbox.y1 - page_bbox.y0;
+    fz_rect rect = {startX, startY, startX + sizeX, startY + sizeY};
+    fz_matrix pageMatrix = fz_make_matrix(1,0,0,1,0,0);
+    //cpdf_page.GetDisplayMatrix
+    float x0 = 0;
+    float y0 = 0;
+    float x1 = 0;
+    float y1 = 0;
+    float x2 = 0;
+    float y2 = 0;
+    rotate %= 4;
+    switch (rotate) {
+        case 0:
+            pageMatrix = fz_make_matrix(1,0,0,1,-page_bbox.x0, -page_bbox.y1);
+            x0 = rect.x0;
+            y0 = rect.y1;
+            x1 = rect.x0;
+            y1 = rect.y0;
+            x2 = rect.x1;
+            y2 = rect.y1;
+            break;
+        case 1:
+            pageMatrix = fz_make_matrix(0,-1,1,0,-page_bbox.y1, -page_bbox.x1);
+            x0 = rect.x0;
+            y0 = rect.y0;
+            x1 = rect.x1;
+            y1 = rect.x0;
+            x2 = rect.x0;
+            y2 = rect.y1;
+            break;
+        case 2:
+            pageMatrix = fz_make_matrix(-1,0,0,-1,page_bbox.x1, page_bbox.y0);
+            x0 = rect.x1;
+            y0 = rect.y0;
+            x1 = rect.x1;
+            y1 = rect.y1;
+            x2 = rect.x0;
+            y2 = rect.y0;
+            break;
+        case 3:
+            pageMatrix = fz_make_matrix(0,1,-1,0,page_bbox.y0, page_bbox.x0);
+            x0 = rect.x1;
+            y0 = rect.y1;
+            x1 = rect.x0;
+            y1 = rect.y1;
+            x2 = rect.x1;
+            y2 = rect.x0;
+            break;
+    }
+    fz_matrix tmpMatrix = {
+            (x2 - x0) / page_width, (y2 - y0) / page_width,
+            (x1 - x0) / page_height,
+            (y1 - y0) / page_height, x0, y0
+    };
+    fz_matrix display_matrix = FZ_Matrix_multiply(pageMatrix, tmpMatrix);
+    fz_point p = fz_make_point(device_x, device_y);
+    fz_matrix inverse = FZ_Matrix_inverse(display_matrix);
+    fz_transform_point(p, inverse);
+    return to_Point_safe(get_context(env), env, p);
+}
+
+static void FZ_Rect_normalize(fz_rect *rect)
+{
+    int tmp = 0;
+    if(rect->x0 > rect->x1) {
+        tmp = rect->x1;
+        rect->x1 = rect->x0;
+        rect->x0 = tmp;
+    }
+    if(rect->y0 > rect->y1) {
+        tmp = rect->y1;
+        rect->y1 = rect->y0;
+        rect->y0 = tmp;
+    }
+}
+
+/**
+ * 获取页面尺寸，参考pdfium cpdf_page.cpp CPDF_Page::UpdateDimensions实现
+ * @param env
+ * @param self
+ * @return
+ */
+JNIEXPORT jobject JNICALL
+FUN(Page_getPdfiumBBox)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    fz_page *page = from_Page(env, self);
+    fz_rect media_box = fz_bound_page_box(ctx, page, FZ_MEDIA_BOX);
+    FZ_Rect_normalize(&media_box);
+    if(fz_is_empty_rect(media_box)) {
+        media_box.x0 = 0;
+        media_box.y0 = 0;
+        media_box.x1 = 612;
+        media_box.y1 = 792;
+    }
+    fz_rect crop_box = fz_bound_page_box(ctx, page, FZ_CROP_BOX);
+    FZ_Rect_normalize(&crop_box);
+    if(fz_is_empty_rect(crop_box)) {
+        crop_box = media_box;
+    }else {
+        crop_box = fz_intersect_rect(crop_box, media_box);
+    }
+    return to_Rect_safe(ctx, env, crop_box);
 }
 
 JNIEXPORT jbyteArray JNICALL
