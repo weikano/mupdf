@@ -51,11 +51,15 @@ int main(int argc, char** argv)
             printf("begin analyze bbox for page %d\n", i);
             fz_page *page = fz_load_page(ctx, doc, i);
             fz_rect rect = fz_make_rect(0,0,0,0);
-            fz_device* device = fz_new_bbox_device(ctx, &rect);
+            fz_device* device = fz_new_bbox_device(ctx, &rect);            
             fz_run_page(ctx, page, device, fz_identity, NULL);
+            fz_rect cropbox = fz_bound_page_box(ctx,page, FZ_CROP_BOX);
+            fz_rect mediabox = fz_bound_page_box(ctx,page, FZ_MEDIA_BOX);
             fz_drop_page(ctx, page);
             fz_close_device(ctx, device);
             fz_drop_device(ctx, device);
+            printf("cropbox(%f, %f, %f, %f)\n", cropbox.x0, cropbox.y0, cropbox.x1, cropbox.y1);
+            printf("mediabox(%f, %f, %f, %f)\n", mediabox.x0, mediabox.y0, mediabox.x1, mediabox.y1);
             printf("bbox at page %d:(%f,%f,%f,%f)\n", i, rect.x0, rect.y0, rect.x1, rect.y1);
         }
         
