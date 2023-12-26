@@ -377,7 +377,6 @@ static fz_matrix FZ_Matrix_multiply(fz_matrix src, fz_matrix right)
 JNIEXPORT jobject JNICALL
 FUN(Page_deviceToPage)(JNIEnv *env, jobject self, jobject jpagerect, jint startX, jint startY, jint sizeX, jint sizeY, jint rotate, jdouble device_x, jdouble device_y)
 {
-    fz_context *context = get_context(env);
     fz_rect page_bbox = from_Rect(env, jpagerect);
     float page_width = page_bbox.x1 - page_bbox.x0;
     float page_height = page_bbox.y1 - page_bbox.y0;
@@ -438,6 +437,71 @@ FUN(Page_deviceToPage)(JNIEnv *env, jobject self, jobject jpagerect, jint startX
     fz_point p = fz_make_point(device_x, device_y);
     fz_matrix inverse = FZ_Matrix_inverse(display_matrix);
     fz_transform_point(p, inverse);
+    return to_Point_safe(get_context(env), env, p);
+}
+
+JNIEXPORT jobject JNICALL
+FUN(Page_pageToDevice)(JNIEnv *env, jobject self, jobject jpagerect, jint startX, jint startY, jint sizeX, jint sizeY, jint rotate, jdouble device_x, jdouble device_y)
+{
+    fz_rect page_bbox = from_Rect(env, jpagerect);
+    float page_width = page_bbox.x1 - page_bbox.x0;
+    float page_height = page_bbox.y1 - page_bbox.y0;
+    fz_rect rect = {startX, startY, startX + sizeX, startY + sizeY};
+    fz_matrix pageMatrix = fz_make_matrix(1,0,0,1,0,0);
+    //cpdf_page.GetDisplayMatrix
+    float x0 = 0;
+    float y0 = 0;
+    float x1 = 0;
+    float y1 = 0;
+    float x2 = 0;
+    float y2 = 0;
+    rotate %= 4;
+    switch (rotate) {
+        case 0:
+            pageMatrix = fz_make_matrix(1,0,0,1,-page_bbox.x0, -page_bbox.y1);
+            x0 = rect.x0;
+            y0 = rect.y1;
+            x1 = rect.x0;
+            y1 = rect.y0;
+            x2 = rect.x1;
+            y2 = rect.y1;
+            break;
+        case 1:
+            pageMatrix = fz_make_matrix(0,-1,1,0,-page_bbox.y1, -page_bbox.x1);
+            x0 = rect.x0;
+            y0 = rect.y0;
+            x1 = rect.x1;
+            y1 = rect.x0;
+            x2 = rect.x0;
+            y2 = rect.y1;
+            break;
+        case 2:
+            pageMatrix = fz_make_matrix(-1,0,0,-1,page_bbox.x1, page_bbox.y0);
+            x0 = rect.x1;
+            y0 = rect.y0;
+            x1 = rect.x1;
+            y1 = rect.y1;
+            x2 = rect.x0;
+            y2 = rect.y0;
+            break;
+        case 3:
+            pageMatrix = fz_make_matrix(0,1,-1,0,page_bbox.y0, page_bbox.x0);
+            x0 = rect.x1;
+            y0 = rect.y1;
+            x1 = rect.x0;
+            y1 = rect.y1;
+            x2 = rect.x1;
+            y2 = rect.x0;
+            break;
+    }
+    fz_matrix tmpMatrix = {
+            (x2 - x0) / page_width, (y2 - y0) / page_width,
+            (x1 - x0) / page_height,
+            (y1 - y0) / page_height, x0, y0
+    };
+    fz_matrix display_matrix = FZ_Matrix_multiply(pageMatrix, tmpMatrix);
+    fz_point p = fz_make_point(device_x, device_y);
+    fz_transform_point(p, display_matrix);
     return to_Point_safe(get_context(env), env, p);
 }
 

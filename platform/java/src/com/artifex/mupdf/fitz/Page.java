@@ -121,6 +121,8 @@ public class Page
 	public native StructuredText toStructuredTextAdvance(int flags, float scale);
 
 	/**
+	 * pdfium中FPDF_DeviceToPage
+	 *
 	 * if (!page || !page_x || !page_y)
 	 * return false;
 	 * <p>
@@ -145,6 +147,35 @@ public class Page
 	 * @return 映射到pdf文档坐标后的x,y null if context exception
 	 */
 	public native Point deviceToPage(Rect bbox, int startX, int startY, int size_x, int size_y, int rotate, double device_x, double device_y);
+
+	/**
+	 * pdfium中FPDF_PageToDevice
+	 *
+	 * if (!page || !device_x || !device_y)
+	 *     return false;
+	 *
+	 *   IPDF_Page* pPage = IPDFPageFromFPDFPage(page);
+	 *   const FX_RECT rect(start_x, start_y, start_x + size_x, start_y + size_y);
+	 *   CFX_PointF page_point(static_cast<float>(page_x), static_cast<float>(page_y));
+	 *   absl::optional<CFX_PointF> pos =
+	 *       pPage->PageToDevice(rect, rotate, page_point);
+	 *   if (!pos.has_value())
+	 *     return false;
+	 *
+	 *   *device_x = FXSYS_roundf(pos->x);
+	 *   *device_y = FXSYS_roundf(pos->y);
+	 *   return true;
+	 * @param bbox 页面尺寸
+	 * @param startX 偏移量x
+	 * @param startY 偏移量Y
+	 * @param size_x 映射后的宽度
+	 * @param size_y 映射后的高度
+	 * @param rotate 旋转
+	 * @param device_x 在size_x上的横坐标
+	 * @param device_y 在size_y上的纵坐标
+	 * @return 映射到pdf文档坐标后的x,y null if context exception
+	 */
+	public native Point pageToDevice(Rect bbox, int startX, int startY, int size_x, int size_y, int rotate, double device_x, double device_y);
 
 	/**
 	 * 获取页面尺寸，参考pdfium cpdf_page.cpp CPDF_Page::UpdateDimensions实现

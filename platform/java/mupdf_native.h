@@ -5378,6 +5378,14 @@ JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_deviceToPage
 
 /*
  * Class:     com_artifex_mupdf_fitz_Page
+ * Method:    deviceToPage
+ * Signature: (DDIIIIDD)Lcom/artifex/mupdf/fitz/Point;
+ */
+JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_pageToDevice
+        (JNIEnv *, jobject page, jobject rect, jint startX, jint startY, jint sizeX, jint sizeY, jint rotate, jdouble device_x, jdouble device_y);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_Page
  * Method:    getPdfiumBBox
  * Signature: (V)Lcom/artifex/mupdf/fitz/Rect;
  */
