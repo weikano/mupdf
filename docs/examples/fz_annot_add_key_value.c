@@ -116,6 +116,15 @@ int main(int argc, char** argv)
         const char *key = "noteid";    
         pdf_set_annot_note_id(ctx, annot, "noteidjklasjdfasdf");        
         printf("pdf_annot_note_id :%s\n", pdf_annot_note_id(ctx, annot));
+        pdf_set_annot_range(ctx, annot, 1, 2);
+        printf("pdf_set_annot_range \n");
+        pdf_set_annot_last_modified_time(ctx, annot, 1234);
+        printf("pdf_set_annopdf_set_annot_last_modified_timet_range \n");
+        int out[2] = {0};
+        pdf_annot_range(ctx, annot, out);
+        printf("pdf_annot_range(%d, %d)\n", out[0], out[1]);
+        printf("pdf_annot_last_modified_time:%lld\n", pdf_annot_last_modified_time(ctx, annot));
+
         pdf_set_annot_quad_points(ctx, annot, quadpoint_count, quadpoints);
         // pdf_set_annot_key_value(ctx, annot, "noteid", "234");
         // pdf_set_annot_key_value(ctx, annot, "range", "1_2");                          

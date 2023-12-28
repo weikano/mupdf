@@ -3516,3 +3516,61 @@ pdf_annot_note_id(fz_context *ctx, pdf_annot *annot)
 {
 	return pdf_dict_get_text_string(ctx, annot->obj, PDF_NAME(NOTE_ID));	
 }
+
+void pdf_set_annot_range(fz_context *ctx, pdf_annot *annot, int startIndex, int endIndex)
+{
+	begin_annot_op(ctx, annot, "pdf_set_annot_range");
+	fz_try(ctx)
+	{
+		char value[50];
+		sprintf(value, "%d_%d", startIndex, endIndex);
+		pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(RANGE), value);		
+		pdf_dirty_annot(ctx, annot);
+		end_annot_op(ctx, annot);
+	}
+	fz_catch(ctx)
+	{
+		abandon_annot_op(ctx, annot);
+		fz_rethrow(ctx);
+	}
+}
+
+void pdf_annot_range(fz_context *ctx, pdf_annot *annot, int *out2int)
+{
+	char* ret = pdf_dict_get_text_string(ctx, annot->obj, PDF_NAME(RANGE));
+	int start = 0;
+	int end = 0;
+	if(ret && strlen(ret) > 0) {
+		sscanf(ret, "%d_%d", &start, &end);
+	}	
+	out2int[0] = start;
+	out2int[1] = end;
+}
+
+void pdf_set_annot_last_modified_time(fz_context *ctx, pdf_annot *annot, long long int timestamp)
+{
+	begin_annot_op(ctx, annot, "pdf_set_annot_last_modified_time");
+	fz_try(ctx)
+	{
+		char value[50];
+		sprintf(value, "%lld", timestamp);
+		pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(LAST_MODIFIED_TIME), value);		
+		pdf_dirty_annot(ctx, annot);
+		end_annot_op(ctx, annot);
+	}
+	fz_catch(ctx)
+	{
+		abandon_annot_op(ctx, annot);
+		fz_rethrow(ctx);
+	}
+}
+
+long long int pdf_annot_last_modified_time(fz_context *ctx, pdf_annot *annot)
+{
+	char* ret = pdf_dict_get_text_string(ctx, annot->obj, PDF_NAME(LAST_MODIFIED_TIME));
+	long long int timestamp = 0;
+	if(ret && strlen(ret) > 0) {
+		sscanf(ret,"%lld", &timestamp);
+	}
+	return timestamp;
+}
