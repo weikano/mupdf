@@ -918,4 +918,7 @@ void pdf_set_annot_hidden_for_editing(fz_context *ctx, pdf_annot *annot, int hid
  */
 int pdf_apply_redaction(fz_context *ctx, pdf_annot *annot, pdf_redact_options *opts);
 
+void pdf_set_annot_note_id(fz_context *ctx, pdf_annot *annot, const char *value);
+const char* pdf_annot_note_id(fz_context *ctx, pdf_annot *annot);
+
 #endif

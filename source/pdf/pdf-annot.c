@@ -3492,3 +3492,27 @@ pdf_set_annot_hidden_for_editing(fz_context *ctx, pdf_annot *annot, int hidden)
 {
 	annot->hidden_editing = hidden;
 }
+
+void pdf_set_annot_note_id(fz_context *ctx, pdf_annot *annot, const char* value)
+{
+	begin_annot_op(ctx, annot, "pdf_set_annot_key_value");
+
+	fz_try(ctx)
+	{
+		pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(NOTE_ID), value);
+		// pdf_dict_del(ctx, annot->obj, PDF_NAME(RC)); /* not supported */
+		pdf_dirty_annot(ctx, annot);
+		end_annot_op(ctx, annot);
+	}
+	fz_catch(ctx)
+	{
+		abandon_annot_op(ctx, annot);
+		fz_rethrow(ctx);
+	}	
+}
+
+const char * 
+pdf_annot_note_id(fz_context *ctx, pdf_annot *annot)
+{
+	return pdf_dict_get_text_string(ctx, annot->obj, PDF_NAME(NOTE_ID));	
+}
