@@ -1630,3 +1630,116 @@ FUN(PDFAnnotation_hasRect)(JNIEnv *env, jobject self)
 
 	return has;
 }
+
+JNIEXPORT void JNICALL
+FUN(PDFAnnotation_setNoteId)(JNIEnv *env, jobject self, jstring jnoteid)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+    const char *contents = "";
+
+    if (!ctx || !annot) return;
+    if (jnoteid)
+    {
+        contents = (*env)->GetStringUTFChars(env, jnoteid, NULL);
+        if (!contents) return;
+    }
+
+    fz_try(ctx)
+        pdf_set_annot_note_id(ctx, annot, contents);
+    fz_always(ctx)
+        {
+            if (contents)
+                (*env)->ReleaseStringUTFChars(env, jnoteid, contents);
+        }
+    fz_catch(ctx)
+        jni_rethrow_void(env, ctx);
+}
+
+JNIEXPORT void JNICALL
+FUN(PDFAnnotation_setNoteRange)(JNIEnv *env, jobject self, jint start, jint end)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+
+    if (!ctx || !annot) return;
+    fz_try(ctx)
+        pdf_set_annot_range(ctx, annot, start, end);
+    fz_catch(ctx)
+        jni_rethrow_void(env, ctx);
+}
+
+JNIEXPORT void JNICALL
+FUN(PDFAnnotation_setNoteLastUpdateTime)(JNIEnv *env, jobject self, jlong timestamp)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+
+    if (!ctx || !annot) return;
+    fz_try(ctx)
+        pdf_set_annot_last_modified_time(ctx, annot, timestamp);
+    fz_catch(ctx)
+        jni_rethrow_void(env, ctx);
+}
+
+JNIEXPORT jstring JNICALL
+FUN(PDFAnnotation_getNoteId)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+    const char *contents = NULL;
+
+    if (!ctx || !annot) return NULL;
+
+    fz_try(ctx)
+        contents = pdf_annot_note_id(ctx, annot);
+    fz_catch(ctx)
+        jni_rethrow(env, ctx);
+
+    return (*env)->NewStringUTF(env, contents);
+}
+
+JNIEXPORT jboolean JNICALL
+FUN(PDFAnnotation_getNoteRange)(JNIEnv *env, jobject self, jintArray range)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+
+    if (!ctx || !annot) return JNI_FALSE;
+
+    fz_try(ctx)
+    {
+        int out[2] = {0,0};
+        pdf_annot_range(ctx, annot, out);
+        int len = (*env)->GetArrayLength(env, range);
+        if(len < 2) {
+            return JNI_FALSE;
+        }
+        jint *r = (*env)->GetIntArrayElements(env, range, NULL);
+        r[0] = out[0];
+        r[1] = out[1];
+        (*env)->ReleaseIntArrayElements(env,range, r, 0);
+    }
+    fz_catch(ctx)
+    {
+        jni_rethrow(env,ctx);
+    }
+    return JNI_FALSE;
+}
+
+JNIEXPORT jlong JNICALL
+FUN(PDFAnnotation_getNoteLastUpdateTime)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    pdf_annot *annot = from_PDFAnnotation(env, self);
+
+    if (!ctx || !annot) return 0;
+
+    fz_try(ctx)
+        return pdf_annot_last_modified_time(ctx, annot);
+    fz_catch(ctx)
+        jni_rethrow(env, ctx);
+    return 0;
+}
+
+

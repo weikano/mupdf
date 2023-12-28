@@ -341,4 +341,14 @@ public class PDFAnnotation
 	public native void setHiddenForEditing(boolean hidden);
 
 	public native boolean applyRedaction(boolean blackBoxes, int imageMethod);
+
+	public native void setNoteId(String id);
+	public native void setNoteRange(int start, int end);
+	public native void setNoteLastUpdateTime(long timestamp);
+
+	public native String getNoteId();
+
+	public native boolean getNoteRange(int[] range);
+
+	public native long getNoteLastUpdateTime();
 }

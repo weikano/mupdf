@@ -3540,6 +3540,54 @@ JNIEXPORT void JNICALL Java_com_artifex_mupdf_fitz_PDFAnnotation_setHiddenForEdi
 JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_PDFAnnotation_applyRedaction
   (JNIEnv *, jobject, jboolean, jint);
 
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    setNoteId
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL com_artifex_mupdf_fitz_PDFAnnotation_setNoteId
+        (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    setNoteRange
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL com_artifex_mupdf_fitz_PDFAnnotation_setNoteRange
+        (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    setNoteLastUpdateTime
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL com_artifex_mupdf_fitz_PDFAnnotation_setNoteLastUpdateTime
+        (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    setNoteLastUpdateTime
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL com_artifex_mupdf_fitz_PDFAnnotation_getNoteId
+        (JNIEnv *, jobject);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    getNoteLastUpdateTime
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL com_artifex_mupdf_fitz_PDFAnnotation_getNoteLastUpdateTime
+        (JNIEnv *, jobject);
+
+/*
+ * Class:     com_artifex_mupdf_fitz_PDFAnnotation
+ * Method:    getNoteRange
+ * Signature: ([I)Z
+ */
+JNIEXPORT jboolean JNICALL com_artifex_mupdf_fitz_PDFAnnotation_getNoteRange
+        (JNIEnv *, jobject, jintArray);
+
 #ifdef __cplusplus
 }
 #endif
