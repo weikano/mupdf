@@ -201,10 +201,9 @@ FUN(StructuredText_walk)(JNIEnv *env, jobject self, jobject walker)
 					if (!jfont) return;
 
 					jquad = to_Quad_safe(ctx, env, ch->quad);
-					if (!jquad) return;
-
+					if (!jquad) return;				
 					(*env)->CallVoidMethod(env, walker, mid_StructuredTextWalker_onChar,
-						ch->c, jorigin, jfont, ch->size, jquad);
+						ch->c, jorigin, jfont, ch->size, jquad, ch->color);
 					if ((*env)->ExceptionCheck(env)) return;
 
 					(*env)->DeleteLocalRef(env, jquad);

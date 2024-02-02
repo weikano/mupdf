@@ -29,5 +29,5 @@ public interface StructuredTextWalker
 	void endTextBlock();
 	void beginLine(Rect bbox, int wmode, Point dir);
 	void endLine();
-	void onChar(int c, Point origin, Font font, float size, Quad q);
+	void onChar(int c, Point origin, Font font, float size, Quad q, int color);
 }

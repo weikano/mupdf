@@ -100,7 +100,7 @@ public class StructuredText
 			lines.add(line);
 		}
 
-		public void onChar(int c, Point origin, Font font, float size, Quad quad) {
+		public void onChar(int c, Point origin, Font font, float size, Quad quad, int color) {
 			TextChar chr = new TextChar();
 			chr.c = c;
 			chr.quad = quad;
