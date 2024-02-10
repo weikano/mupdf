@@ -77,6 +77,42 @@ FUN(Font_getName)(JNIEnv *env, jobject self)
 	return (*env)->NewStringUTF(env, fz_font_name(ctx, font));
 }
 
+JNIEXPORT jboolean JNICALL
+FUN(Font_isBold)(JNIEnv* env, jobject self)
+{
+	fz_context *ctx = get_context(env);
+	fz_font* font = from_Font(env, self);
+	if(!ctx || !font) return false;
+	return fz_font_is_bold(ctx, font);
+}
+
+JNIEXPORT jboolean JNICALL
+FUN(Font_isItalic)(JNIEnv* env, jobject self)
+{
+	fz_context *ctx = get_context(env);
+	fz_font* font = from_Font(env, self);
+	if(!ctx || !font) return false;
+	return fz_font_is_italic(ctx, font);
+}
+
+JNIEXPORT jboolean JNICALL
+FUN(Font_isMonospaced)(JNIEnv* env, jobject self)
+{
+	fz_context *ctx = get_context(env);
+	fz_font* font = from_Font(env, self);
+	if(!ctx || !font) return false;
+	return fz_font_is_monospaced(ctx, font);
+}
+
+JNIEXPORT jboolean JNICALL
+FUN(Font_isSerif)(JNIEnv* env, jobject self)
+{
+	fz_context *ctx = get_context(env);
+	fz_font* font = from_Font(env, self);
+	if(!ctx || !font) return false;
+	return fz_font_is_serif(ctx, font);
+}
+
 JNIEXPORT jint JNICALL
 FUN(Font_encodeCharacter)(JNIEnv *env, jobject self, jint unicode)
 {

@@ -60,6 +60,10 @@ public class Font
 	}
 
 	public native String getName();
+	public native boolean isBold();
+	public native boolean isItalic();
+	public native boolean isMonospaced();
+	public native boolean isSerif();
 
 	public native int encodeCharacter(int unicode);
 	public native float advanceGlyph(int glyph, boolean wmode);

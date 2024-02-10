@@ -1843,6 +1843,17 @@ JNIEXPORT jlong JNICALL Java_com_artifex_mupdf_fitz_Font_newNative
 JNIEXPORT jstring JNICALL Java_com_artifex_mupdf_fitz_Font_getName
   (JNIEnv *, jobject);
 
+JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isBold
+	(JNIEnv *, jobject);	
+
+JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isItalic
+	(JNIEnv *, jobject);
+
+JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isMonospaced
+	(JNIEnv *, jobject);	
+
+JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isSerif
+	(JNIEnv *, jobject);	
 /*
  * Class:     com_artifex_mupdf_fitz_Font
  * Method:    encodeCharacter
