@@ -218,6 +218,14 @@ public class Document
 	public native String getMetaData(String key);
 	public native void setMetaData(String key, String value);
 	public native boolean isReflowable();
+
+	/**
+	 * 是否可以文字重排
+	 * @return
+	 */
+	public boolean isTextReflowable() {
+		return isReflowable();
+	}
 	public native void layout(float width, float height, float em);
 
 	public native Location findBookmark(long mark);

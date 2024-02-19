@@ -22,6 +22,8 @@
 
 package com.artifex.mupdf.fitz;
 
+import android.os.Trace;
+
 import java.io.InputStream;
 import java.util.Date;
 
@@ -177,6 +179,39 @@ public class PDFDocument extends Document
 
 		public AlertResult onAlert(PDFDocument doc, String title, String message, int iconType, int buttonGroupType, boolean hasCheckbox, String checkboxMessage, boolean checkboxState);
 	}
+
+	private static final int PART = 6;
+	/**
+	 * 百分比，超过60%才算合格
+	 */
+	private static final float PASS_TEXT_REFLOW = 0.6f;
+
+	@Override
+	public boolean isTextReflowable() {
+		int pageCount = countPages();
+		int part = pageCount / PART;
+		for(int i=0;i<PART;i++) {
+			int pageIndex = part * i;
+			if(pageIndex < pageCount) {
+				Page page = null;
+				try {
+					page = loadPage(pageIndex);
+					Rect mediaBox = page.getBounds(Page.MEDIA_BOX);
+					TextReflowWalker walker = new TextReflowWalker(mediaBox);
+					page.toStructuredText().walk(walker);
+					if(walker.canTextReflow()) {
+						return true;
+					}
+				}finally {
+					if(page != null) {
+						page.destroy();
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public native void enableJs();
 	public native void disableJs();
 	public native boolean isJsSupported();
@@ -243,7 +278,6 @@ public class PDFDocument extends Document
 	}
 
 	public native int countSignatures();
-
 	public native PDFObject addEmbeddedFile(String filename, String mimetype, Buffer contents, long created, long modified, boolean addChecksum);
 	public native PDFEmbeddedFileParams getEmbeddedFileParams(PDFObject fs);
 	public native Buffer loadEmbeddedFileContents(PDFObject fs);
@@ -270,6 +304,56 @@ public class PDFDocument extends Document
 			this.size = size;
 			this.creationDate = new Date(created);
 			this.modificationDate = new Date(modified);
+		}
+	}
+
+	private static class TextReflowWalker implements StructuredTextWalker {
+		private int score;
+		private int charCount;
+		private final Rect mediaBox = new Rect();
+
+		public TextReflowWalker(Rect mediaBox) {
+			this.mediaBox.x0 = mediaBox.x0;
+			this.mediaBox.x1 = mediaBox.x1;
+			this.mediaBox.y1 = mediaBox.y1;
+			this.mediaBox.y0 = mediaBox.y0;
+		}
+
+		@Override
+		public void onImageBlock(Rect bbox, Matrix transform, Image image) {
+
+		}
+
+		@Override
+		public void beginTextBlock(Rect bbox) {
+
+		}
+
+		@Override
+		public void endTextBlock() {
+
+		}
+
+		@Override
+		public void beginLine(Rect bbox, int wmode, Point dir) {
+
+		}
+
+		@Override
+		public void endLine() {
+
+		}
+
+		@Override
+		public void onChar(int c, Point origin, Font font, float size, Quad q, int color) {
+			charCount ++;
+			if(mediaBox.contains(q.toRect())) {
+				score ++;
+			}
+		}
+
+		private boolean canTextReflow() {
+			return score >= charCount * PASS_TEXT_REFLOW;
 		}
 	}
 
