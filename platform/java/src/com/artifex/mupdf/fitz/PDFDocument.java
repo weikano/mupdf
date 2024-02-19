@@ -353,7 +353,7 @@ public class PDFDocument extends Document
 		}
 
 		private boolean canTextReflow() {
-			return score >= charCount * PASS_TEXT_REFLOW;
+			return charCount > 0 && score >= charCount * PASS_TEXT_REFLOW;
 		}
 	}
 
