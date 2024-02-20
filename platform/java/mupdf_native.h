@@ -1844,16 +1844,16 @@ JNIEXPORT jstring JNICALL Java_com_artifex_mupdf_fitz_Font_getName
   (JNIEnv *, jobject);
 
 JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isBold
-	(JNIEnv *, jobject);	
+	(JNIEnv *, jobject);
 
 JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isItalic
 	(JNIEnv *, jobject);
 
 JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isMonospaced
-	(JNIEnv *, jobject);	
+	(JNIEnv *, jobject);
 
 JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Font_isSerif
-	(JNIEnv *, jobject);	
+	(JNIEnv *, jobject);
 /*
  * Class:     com_artifex_mupdf_fitz_Font
  * Method:    encodeCharacter
@@ -2042,6 +2042,8 @@ JNIEXPORT void JNICALL Java_com_artifex_mupdf_fitz_Image_setOrientation
  */
 JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Image_toPixmap
   (JNIEnv *, jobject);
+JNIEXPORT jbyteArray JNICALL Java_com_artifex_mupdf_fitz_Image_toByteBuffer
+        (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

@@ -78,4 +78,6 @@ public class Image
 	public native void setOrientation(int orientation);
 
 	public native Pixmap toPixmap();
+
+	public native byte[] toByteBuffer();
 }

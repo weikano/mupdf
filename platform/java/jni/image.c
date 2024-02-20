@@ -229,6 +229,47 @@ FUN(Image_toPixmap)(JNIEnv *env, jobject self)
 	return to_Pixmap_safe_own(ctx, env, pixmap);
 }
 
+JNIEXPORT jbyteArray JNICALL
+FUN(Image_toByteBuffer)(JNIEnv *env, jobject self)
+{
+    jbyteArray arr = NULL;
+    fz_context *ctx = get_context(env);
+    fz_image *img = from_Image(env, self);
+    fz_buffer *buf = NULL;
+    fz_output *out = NULL;
+    unsigned char *data;
+    size_t len;
+    if(!ctx || !img) return NULL;
+    fz_var(buf);
+    fz_var(out);
+    fz_try(ctx)
+    {
+        buf = fz_new_buffer(ctx, 256);
+        out = fz_new_output_with_buffer(ctx, buf);
+        fz_write_image_as_data_uri(ctx, out, img);
+        fz_close_output(ctx, out);
+
+        len = fz_buffer_storage(ctx, buf, &data);
+        arr = (*env)->NewByteArray(env, (jsize)len);
+        if ((*env)->ExceptionCheck(env))
+            fz_throw_java(ctx, env);
+        if (!arr)
+            fz_throw(ctx, FZ_ERROR_GENERIC, "cannot create byte array");
+
+        (*env)->SetByteArrayRegion(env, arr, 0, (jsize)len, (jbyte *)data);
+        if ((*env)->ExceptionCheck(env))
+            fz_throw_java(ctx, env);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_output(ctx, out);
+        fz_drop_buffer(ctx, buf);
+    }
+    fz_catch(ctx)
+        jni_rethrow(env, ctx);
+    return arr;
+}
+
 JNIEXPORT jintArray JNICALL
 FUN(Image_getColorKey)(JNIEnv *env, jobject self)
 {
