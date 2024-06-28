@@ -58,3 +58,36 @@ FUN(Cookie_abort)(JNIEnv *env, jobject self)
 
 	cookie->abort = 1;
 }
+
+JNIEXPORT jboolean JNICALL
+FUN(Cookie_aborted)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    fz_cookie *cookie = from_Cookie(env, self);
+
+    if (!ctx || !cookie) return false;
+
+    return cookie->abort == 1;
+}
+
+JNIEXPORT jint JNICALL
+FUN(Cookie_getProgress)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    fz_cookie *cookie = from_Cookie(env, self);
+
+    if (!ctx || !cookie) return 0;
+
+    return cookie->progress;
+}
+
+JNIEXPORT jint JNICALL
+FUN(Cookie_getMax)(JNIEnv *env, jobject self)
+{
+    fz_context *ctx = get_context(env);
+    fz_cookie *cookie = from_Cookie(env, self);
+
+    if (!ctx || !cookie) return 0;
+
+    return cookie->progress_max;
+}

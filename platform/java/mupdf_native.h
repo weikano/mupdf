@@ -443,6 +443,12 @@ JNIEXPORT jlong JNICALL Java_com_artifex_mupdf_fitz_Cookie_newNative
 JNIEXPORT void JNICALL Java_com_artifex_mupdf_fitz_Cookie_abort
   (JNIEnv *, jobject);
 
+JNIEXPORT jboolean JNICALL Java_com_artifex_mupdf_fitz_Cookie_aborted
+        (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_com_artifex_mupdf_fitz_Cookie_getProgress
+        (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_com_artifex_mupdf_fitz_Cookie_getMax
+        (JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif
