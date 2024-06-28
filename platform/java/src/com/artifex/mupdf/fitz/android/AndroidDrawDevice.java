@@ -115,5 +115,11 @@ public final class AndroidDrawDevice extends NativeDevice
 		return drawPage(page, fitPageWidth(page, fitW));
 	}
 
+	public void configDrawDevice(boolean allowImage, boolean allowText) {
+		nativeConfigDrawDevice(pointer, allowImage, allowText);
+	}
+
+	private native static void nativeConfigDrawDevice(long ptr, boolean allowImage, boolean allowText);
+
 	public native final void invertLuminance();
 }

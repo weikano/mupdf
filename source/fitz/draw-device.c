@@ -3303,3 +3303,22 @@ fz_new_draw_device_with_options(fz_context *ctx, const fz_draw_options *opts, fz
 	}
 	return dev;
 }
+
+
+
+//eink
+void fz_config_draw_device(fz_device *device, int allow_image, int allow_text)
+{
+    fz_draw_device *d = (fz_draw_device *) device;
+    if(allow_image == 0) {
+        d->super.fill_image = NULL;
+        d->super.clip_image_mask = NULL;
+        d->super.fill_image_mask = NULL;
+    }
+    if(allow_text == 0) {
+        d->super.fill_text = NULL;
+        d->super.clip_text = NULL;
+        d->super.clip_text = NULL;
+        d->super.clip_stroke_text = NULL;
+    }
+}

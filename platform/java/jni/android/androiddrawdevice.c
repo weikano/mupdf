@@ -199,3 +199,10 @@ FUN(android_AndroidDrawDevice_newNative)(JNIEnv *env, jclass self, jobject jbitm
 
 	return device;
 }
+
+JNIEXPORT void JNICALL
+FUN(android_AndroidDrawDevice_nativeConfigDrawDevice)(JNIEnv *env, jclass self, jlong deviceptr, jboolean allow_image, jboolean allow_text)
+{
+    fz_device * d = (fz_device *) deviceptr;
+    fz_config_draw_device(d, allow_image, allow_text);
+}
