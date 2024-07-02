@@ -119,7 +119,15 @@ public final class AndroidDrawDevice extends NativeDevice
 		nativeConfigDrawDevice(pointer, allowImage, allowText);
 	}
 
+	public void configDrawDeviceWatermark(int[] watermarkImageIdxArray, int[] watermarkTextIdxArray) {
+		if(watermarkImageIdxArray != null && watermarkTextIdxArray != null) {
+			nativeConfigDrawDeviceWatermark(pointer, watermarkImageIdxArray, watermarkTextIdxArray);
+		}
+	}
+
 	private native static void nativeConfigDrawDevice(long ptr, boolean allowImage, boolean allowText);
+
+	private native static void nativeConfigDrawDeviceWatermark(long ptr, int[] watermarkImageIdxArray, int[] watermarkTextIdxArray);
 
 	public native final void invertLuminance();
 }

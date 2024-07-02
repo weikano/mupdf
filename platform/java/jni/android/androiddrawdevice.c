@@ -206,3 +206,16 @@ FUN(android_AndroidDrawDevice_nativeConfigDrawDevice)(JNIEnv *env, jclass self, 
     fz_device * d = (fz_device *) deviceptr;
     fz_config_draw_device(d, allow_image, allow_text);
 }
+
+JNIEXPORT void JNICALL
+FUN(android_AndroidDrawDevice_nativeConfigDrawDeviceWatermark)(JNIEnv *env, jclass self, jlong devicep, jintArray jwatermark_image_idx_array, jintArray jwatermark_text_idx_array)
+{
+    jsize image_array_len = (*env)->GetArrayLength(env, jwatermark_image_idx_array);
+    jint* image_array = (*env)->GetIntArrayElements(env, jwatermark_image_idx_array, NULL);
+    jsize text_array_len = (*env)->GetArrayLength(env, jwatermark_text_idx_array);
+    jint* text_array = (*env)->GetIntArrayElements(env, jwatermark_text_idx_array, NULL);
+    fz_device * d = (fz_device *) devicep;
+    fz_config_draw_device_watermark(d, image_array, image_array_len, text_array, text_array_len);
+    (*env)->ReleaseIntArrayElements(env, jwatermark_image_idx_array, image_array, 0);
+    (*env)->ReleaseIntArrayElements(env, jwatermark_text_idx_array, text_array, 0);
+}

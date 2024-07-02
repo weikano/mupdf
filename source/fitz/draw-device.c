@@ -81,6 +81,12 @@ typedef struct fz_draw_device
 	int stack_cap;
 	fz_draw_state init_stack[STACK_SIZE];
 	fz_shade_color_cache *shade_cache;
+    int *watermark_image_idx_array;
+    int watermark_image_idx_len;
+    int *watermark_text_idx_array;
+    int watermark_text_idx_len;
+    int cur_image_idx;
+    int cur_text_idx;
 } fz_draw_device;
 
 #ifdef DUMP_GROUP_BLENDS
@@ -138,6 +144,46 @@ static void stack_change(fz_context *ctx, fz_draw_device *dev, int c, const char
 #define STACK_CONVERT(A) do {} while (0)
 #endif
 
+/**
+ * 判断当前idx是否是水印
+ * @param array
+ * @param array_len
+ * @param idx
+ * @return
+ */
+static int idx_consider_watermark(int* array, int array_len, int idx)
+{
+    for(int i=0;i<array_len;i++) {
+        if(array[i] == idx) {
+            return 1;
+        }
+    }
+    return 0;
+}
+/**
+ * 图片是否水印
+ * @param device
+ * @return
+ */
+static int image_idx_consider_watermark(fz_draw_device *device)
+{
+    printf("image_idx_consider_watermark image :%d\n", device->cur_image_idx);
+    int ret = idx_consider_watermark(device->watermark_image_idx_array, device->watermark_image_idx_len, device->cur_image_idx);
+    printf("image_idx_consider_watermark image ret %d\n", ret);
+    device->cur_image_idx ++;
+    return ret;
+}
+/**
+ * 文本是否水印
+ * @param device
+ * @return
+ */
+static int text_idx_consider_watermark(fz_draw_device *device)
+{
+    int ret = idx_consider_watermark(device->watermark_text_idx_array, device->watermark_text_idx_len, device->cur_text_idx);
+    device->cur_text_idx ++;
+    return ret;
+}
 /* Logic below assumes that default cs is set to color context cs if there
  * was not a default in the document for that particular cs
  */
@@ -1770,6 +1816,7 @@ find_src_area_required(fz_matrix local_ctm, fz_image *image, fz_irect clip)
 static void
 fz_draw_fill_image(fz_context *ctx, fz_device *devp, fz_image *image, fz_matrix in_ctm, float alpha, fz_color_params color_params)
 {
+    printf("fz_draw_fill_image start\n");
 	fz_draw_device *dev = (fz_draw_device*)devp;
 	fz_matrix local_ctm = fz_concat(in_ctm, dev->transform);
 	fz_pixmap *pixmap;
@@ -1784,8 +1831,14 @@ fz_draw_fill_image(fz_context *ctx, fz_device *devp, fz_image *image, fz_matrix 
 	fz_overprint *eop = &op;
 
 	if (alpha == 0)
-		return;
+    {
+        printf("fz_draw_fill_image alpha == 0\n");
+        return;
+    }
 
+    if(alpha >= 0.5f && image_idx_consider_watermark(dev)) {
+        return;
+    }
 	if (dev->top == 0 && dev->resolve_spots)
 		state = push_group_for_separations(ctx, dev, color_params, dev->default_cs);
 	model = state->dest->colorspace;
@@ -2939,7 +2992,6 @@ static void
 fz_draw_close_device(fz_context *ctx, fz_device *devp)
 {
 	fz_draw_device *dev = (fz_draw_device*)devp;
-
 	/* pop and free the stacks */
 	if (dev->top > dev->resolve_spots)
 		fz_throw(ctx, FZ_ERROR_GENERIC, "items left on stack in draw device: %d", dev->top);
@@ -2969,6 +3021,12 @@ fz_draw_drop_device(fz_context *ctx, fz_device *devp)
 {
 	fz_draw_device *dev = (fz_draw_device*)devp;
 	fz_rasterizer *rast = dev->rast;
+    if(dev->watermark_image_idx_array) {
+        free(dev->watermark_image_idx_array);
+    }
+    if(dev->watermark_text_idx_array) {
+        free(dev->watermark_text_idx_array);
+    }
 
 	fz_drop_default_colorspaces(ctx, dev->default_cs);
 	fz_drop_colorspace(ctx, dev->proof_cs);
@@ -3304,8 +3362,6 @@ fz_new_draw_device_with_options(fz_context *ctx, const fz_draw_options *opts, fz
 	return dev;
 }
 
-
-
 //eink
 void fz_config_draw_device(fz_device *device, int allow_image, int allow_text)
 {
@@ -3322,3 +3378,16 @@ void fz_config_draw_device(fz_device *device, int allow_image, int allow_text)
         d->super.clip_stroke_text = NULL;
     }
 }
+
+void fz_config_draw_device_watermark(fz_device* device, int* watermark_image_idx_array, int watermark_image_idx_size, int *watermark_text_idx_array, int watermark_text_idx_size)
+{
+    printf("fz_config_draw_device_watermark image size %d, text size %d\n", watermark_image_idx_size, watermark_text_idx_size);
+    fz_draw_device *d = (fz_draw_device *) device;
+    d->watermark_image_idx_array = malloc(sizeof(int) * watermark_image_idx_size);
+    memcpy(d->watermark_image_idx_array, watermark_image_idx_array, sizeof(int) * watermark_image_idx_size);
+    d->watermark_image_idx_len = watermark_image_idx_size;
+    d->watermark_text_idx_array = malloc(sizeof(int) * watermark_text_idx_size);
+    memcpy(d->watermark_text_idx_array, watermark_text_idx_array, sizeof(int) * watermark_text_idx_size);
+    d->watermark_text_idx_len = watermark_text_idx_size;
+}
+

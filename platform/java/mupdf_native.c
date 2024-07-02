@@ -52,6 +52,8 @@ NOTE!
 #ifdef HAVE_ANDROID
 #include <android/log.h>
 #include <android/bitmap.h>
+#include <unistd.h>
+
 #define LOG_TAG "libmupdf"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define LOGT(...) __android_log_print(ANDROID_LOG_INFO,"alert",__VA_ARGS__)
@@ -1396,7 +1398,6 @@ JNI_OnLoad(JavaVM *vm, void *reserved)
 		LOGE("cannot get JNI interface during load (error %d)", ret);
 		return -1;
 	}
-
 	return MY_JNI_VERSION;
 }
 

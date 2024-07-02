@@ -596,4 +596,6 @@ fz_device *fz_new_draw_device_with_options(fz_context *ctx, const fz_draw_option
 //eink
 void fz_config_draw_device(fz_device *drawdevice, int allow_image, int allow_text);
 
+void fz_config_draw_device_watermark(fz_device* device, int* watermark_image_idx_array, int watermark_image_idx_size, int *watermark_text_idx_array, int watermark_text_idx_size);
+
 #endif
