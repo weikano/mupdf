@@ -2760,7 +2760,11 @@ static int pdf_xform_is_watermark(fz_context *ctx, pdf_obj *form)
         if(adbe) {
             printf("pdf_xform_is_watermark has adbe\n");
             pdf_obj *private = pdf_dict_get(ctx, adbe, PDF_NAME(Private));
-            return private && pdf_name_eq(ctx, private, PDF_NAME(Watermark));
+            if(private)
+            {
+                printf("pdf_xform_is_watermark private is %s\n", pdf_to_name(ctx, private));
+            }
+            return private && (pdf_name_eq(ctx, private, PDF_NAME(Watermark)) || pdf_name_eq(ctx,private, PDF_NAME(Background)));
         }
     }
     return 0;
