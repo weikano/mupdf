@@ -64,6 +64,10 @@ enum
 	 * glyph? */
 	FZ_DEVFLAG_BBOX_DEFINED = 2048,
 	FZ_DEVFLAG_GRIDFIT_AS_TILED = 4096,
+    /**
+     * 去除form水印
+     */
+    FZ_DEVFLAG_WATERMARK_REMOVED = 8192,
 };
 
 enum

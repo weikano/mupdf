@@ -5417,7 +5417,7 @@ JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_toPixmap
  * Signature: (Z)Lcom/artifex/mupdf/fitz/DisplayList;
  */
 JNIEXPORT jobject JNICALL Java_com_artifex_mupdf_fitz_Page_toDisplayList
-  (JNIEnv *, jobject, jboolean);
+  (JNIEnv *, jobject, jboolean, jboolean);
 
 /*
  * Class:     com_artifex_mupdf_fitz_Page

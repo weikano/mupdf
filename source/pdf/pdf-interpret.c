@@ -366,7 +366,11 @@ pdf_process_Do(fz_context *ctx, pdf_processor *proc, pdf_csi *csi)
 
 	if (pdf_name_eq(ctx, subtype, PDF_NAME(Form)))
 	{
-		if (proc->op_Do_form)
+        int watermark = 0;
+        if(proc->xform_is_watermark) {
+            watermark = proc->xform_is_watermark(ctx, xobj);
+        }
+		if (proc->op_Do_form && !watermark)
 			proc->op_Do_form(ctx, proc, csi->name, xobj);
 	}
 

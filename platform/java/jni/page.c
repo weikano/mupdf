@@ -273,7 +273,7 @@ FUN(Page_search)(JNIEnv *env, jobject self, jstring jneedle)
 }
 
 JNIEXPORT jobject JNICALL
-FUN(Page_toDisplayList)(JNIEnv *env, jobject self, jboolean showExtra)
+FUN(Page_toDisplayList)(JNIEnv *env, jobject self, jboolean showExtra, jboolean removeWatermark)
 {
 	fz_context *ctx = get_context(env);
 	fz_page *page = from_Page(env, self);
@@ -283,9 +283,9 @@ FUN(Page_toDisplayList)(JNIEnv *env, jobject self, jboolean showExtra)
 
 	fz_try(ctx)
 		if (showExtra)
-			list = fz_new_display_list_from_page(ctx, page);
+			list = fz_new_display_list_from_page_watermark(ctx, page, removeWatermark);
 		else
-			list = fz_new_display_list_from_page_contents(ctx, page);
+			list = fz_new_display_list_from_page_contents_watermark(ctx, page, removeWatermark);
 	fz_catch(ctx)
 		jni_rethrow(env, ctx);
 

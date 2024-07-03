@@ -172,6 +172,7 @@ struct pdf_processor
 
 	/* END is used to signify end of stream (finalise and close down) */
 	void (*op_END)(fz_context *ctx, pdf_processor *proc);
+    int (*xform_is_watermark)(fz_context *ctx, pdf_obj* obj);
 
 	/* interpreter state that persists across content streams */
 	const char *usage;

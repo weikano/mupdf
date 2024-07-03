@@ -33,7 +33,8 @@
 #include "mupdf/fitz/xml.h"
 #include "mupdf/fitz/archive.h"
 #include "mupdf/fitz/display-list.h"
-
+fz_display_list *fz_new_display_list_from_page_watermark(fz_context *ctx, fz_page *page, int remove_watermark);
+fz_display_list *fz_new_display_list_from_page_contents_watermark(fz_context *ctx, fz_page *page, int remove_watermark);
 /**
 	Create a display list.
 

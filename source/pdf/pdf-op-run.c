@@ -2750,6 +2750,22 @@ static void pdf_run_END(fz_context *ctx, pdf_processor *proc)
 	pdf_flush_text(ctx, pr);
 }
 
+static int pdf_xform_is_watermark(fz_context *ctx, pdf_obj *form)
+{
+    printf("pdf_xform_is_watermark\n");
+    pdf_obj * pieceinfo = pdf_dict_get(ctx, form, PDF_NAME(PieceInfo));
+    if(pieceinfo) {
+        printf("pdf_xform_is_watermark has pieceinfo\n");
+        pdf_obj* adbe = pdf_dict_get(ctx, pieceinfo, PDF_NAME(ADBE_CompoundType));
+        if(adbe) {
+            printf("pdf_xform_is_watermark has adbe\n");
+            pdf_obj *private = pdf_dict_get(ctx, adbe, PDF_NAME(Private));
+            return private && pdf_name_eq(ctx, private, PDF_NAME(Watermark));
+        }
+    }
+    return 0;
+}
+
 static void
 pdf_close_run_processor(fz_context *ctx, pdf_processor *proc)
 {
@@ -2987,6 +3003,19 @@ pdf_new_run_processor(fz_context *ctx, pdf_document *doc, fz_device *dev, fz_mat
 		proc->super.op_gs_UseBlackPtComp = pdf_run_gs_UseBlackPtComp;
 
 		proc->super.op_END = pdf_run_END;
+        if(dev->flags & FZ_DEVFLAG_WATERMARK_REMOVED) {
+            proc->super.xform_is_watermark = pdf_xform_is_watermark;
+        }else {
+            proc->super.xform_is_watermark = NULL;
+        }
+
+//        if(dev->flags & FZ_DEVFLAG_WATERMARK_REMOVED)
+//        {
+//            proc->super.xform_is_watermark = pdf_xform_is_watermark;
+//        }else
+//        {
+//            proc->super.xform_is_watermark = NULL;
+//        }
 	}
 
 	proc->doc = pdf_keep_document(ctx, doc);

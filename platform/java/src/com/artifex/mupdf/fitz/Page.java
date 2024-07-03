@@ -73,9 +73,9 @@ public class Page
 		return toPixmap(ctm, cs, alpha, true);
 	}
 
-	public native DisplayList toDisplayList(boolean showExtras);
+	public native DisplayList toDisplayList(boolean showExtras, boolean removeWatermark);
 	public DisplayList toDisplayList() {
-		return toDisplayList(true);
+		return toDisplayList(true, false);
 	}
 
 	public native StructuredText toStructuredText(String options);

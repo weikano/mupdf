@@ -24,6 +24,73 @@
 
 #include <float.h>
 
+static void config_fz_device_watermark_flags(fz_context *ctx, fz_device *dev, int remove_watermark)
+{
+    if(remove_watermark)
+    {
+        dev->flags |= FZ_DEVFLAG_WATERMARK_REMOVED;
+    } else
+    {
+        dev->flags &= ~FZ_DEVFLAG_WATERMARK_REMOVED;
+    }
+}
+
+fz_display_list *fz_new_display_list_from_page_contents_watermark(fz_context *ctx, fz_page *page, int remove_watermark)
+{
+    fz_display_list *list;
+    fz_device *dev = NULL;
+
+    fz_var(dev);
+
+    list = fz_new_display_list(ctx, fz_bound_page(ctx, page));
+    fz_try(ctx)
+    {
+        dev = fz_new_list_device(ctx, list);
+        config_fz_device_watermark_flags(ctx, dev, remove_watermark);
+        fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_display_list(ctx, list);
+        fz_rethrow(ctx);
+    }
+
+    return list;
+}
+
+fz_display_list *fz_new_display_list_from_page_watermark(fz_context *ctx, fz_page *page, int remove_watermark)
+{
+    fz_display_list *list;
+    fz_device *dev = NULL;
+
+    fz_var(dev);
+
+    list = fz_new_display_list(ctx, fz_bound_page(ctx, page));
+    fz_try(ctx)
+    {
+        dev = fz_new_list_device(ctx, list);
+        config_fz_device_watermark_flags(ctx, dev, remove_watermark);
+        fz_run_page(ctx, page, dev, fz_identity, NULL);
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_display_list(ctx, list);
+        fz_rethrow(ctx);
+    }
+
+    return list;
+}
+
 fz_display_list *
 fz_new_display_list_from_page(fz_context *ctx, fz_page *page)
 {
