@@ -2762,9 +2762,19 @@ static int pdf_xform_is_watermark(fz_context *ctx, pdf_obj *form)
             pdf_obj *private = pdf_dict_get(ctx, adbe, PDF_NAME(Private));
             if(private)
             {
-                printf("pdf_xform_is_watermark private is %s\n", pdf_to_name(ctx, private));
+                if(pdf_name_eq(ctx, private, PDF_NAME(Background)))
+                {
+                    printf("pdf_xform_private_is_background\n");
+                    return 1;
+                }
+                const char* str = pdf_to_name(ctx, private);
+                if(str) {
+                    printf("pdf_xform_private_contains_Watermark\n");
+                    return strstr(str, "Watermark")!=NULL;
+                }
+//                printf("pdf_xform_is_watermark private is %s\n", pdf_to_name(ctx, private));
             }
-            return private && (pdf_name_eq(ctx, private, PDF_NAME(Watermark)) || pdf_name_eq(ctx,private, PDF_NAME(Background)));
+//            return private && (pdf_name_eq(ctx, private, PDF_NAME(Watermark)) || pdf_name_eq(ctx,private, PDF_NAME(Background)));
         }
     }
     return 0;
